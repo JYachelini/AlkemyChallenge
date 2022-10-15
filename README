@@ -15,3 +15,6 @@ Asegurate de tener las variables de entorno en .env
 - SENDER_EMAIL_API_KEY=
 
 Si es necesario para la corrección, puedo pasar las variables de entorno sin problema.
+
+
+PD: Puede ser que SendGrid me bloqueo la cuenta por exponer la API Key en el .env, por eso lo saque del repositorio.
