@@ -1,0 +1,971 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"version": "1.0.0",
+		"title": "API Alkemy challenge",
+		"description": "API Doc of Alkemy Challenge.",
+		"license": {
+			"name": "MIT",
+			"url": "https://opensource.org/licenses/MIT"
+		}
+	},
+	"host": "localhost:8080",
+	"basePath": "/",
+	"schemes": ["http"],
+	"consumes": ["application/json"],
+	"produces": ["application/json"],
+	"definitions": {
+		"base_model": {
+			"properties": {
+				"id": {
+					"type": "number",
+					"readOnly": true,
+					"minimum": 1
+				},
+				"createdAt": {
+					"type": "string",
+					"readOnly": true
+				},
+				"updatedAt": {
+					"type": "string",
+					"readOnly": true
+				}
+			}
+		},
+		"user": {
+			"allOf": [
+				{
+					"$ref": "#/definitions/base_model"
+				}
+			],
+			"properties": {
+				"email": {
+					"type": "string"
+				},
+				"password": {
+					"type": "string"
+				}
+			}
+		},
+		"movies": {
+			"allOf": [
+				{
+					"$ref": "#/definitions/base_model"
+				}
+			],
+			"properties": {
+				"title": {
+					"type": "string"
+				},
+				"image": {
+					"type": "string"
+				},
+				"date": {
+					"type": "string",
+					"default": "YYYY-MM-DD"
+				},
+				"qualify": {
+					"type": "number",
+					"default": 1,
+					"minimum": 1,
+					"maximum": 5
+				},
+				"characters": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/character"
+					},
+					"readOnly": true
+				},
+				"genres": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/genre"
+					},
+					"readOnly": true
+				}
+			}
+		},
+		"character": {
+			"allOf": [
+				{
+					"$ref": "#/definitions/base_model"
+				}
+			],
+			"properties": {
+				"image": {
+					"type": "string"
+				},
+				"name": {
+					"type": "string"
+				},
+				"age": {
+					"type": "number",
+					"minimum": 18
+				},
+				"weight": {
+					"type": "number"
+				},
+				"history": {
+					"type": "string"
+				},
+				"movies": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/movies"
+					},
+					"readOnly": true
+				}
+			}
+		},
+		"genre": {
+			"allOf": [
+				{
+					"$ref": "#/definitions/base_model"
+				}
+			],
+			"properties": {
+				"name": {
+					"type": "string"
+				},
+				"image": {
+					"type": "string"
+				},
+				"movies": {
+					"type": "array",
+					"items": {
+						"$ref": "#/definitions/movies"
+					}
+				}
+			}
+		}
+	},
+	"tags": [
+		{
+			"name": "characters",
+			"description": "Characters of app"
+		},
+		{
+			"name": "movies",
+			"description": "Movies of app"
+		},
+		{
+			"name": "auth",
+			"description": "Authentication of app"
+		}
+	],
+	"paths": {
+		"/auth/login": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Login",
+				"parameters": [
+					{
+						"in": "body",
+						"name": "body",
+						"description": "Credentials for login",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"email": {
+									"type": "string"
+								},
+								"password": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successfully loged.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string",
+									"default": "Login successfully"
+								},
+								"access_token": {
+									"type": "string"
+								},
+								"user": {
+									"type": "object",
+									"properties": {
+										"email": {
+											"type": "string"
+										},
+										"id": {
+											"type": "number"
+										}
+									}
+								}
+							}
+						}
+					},
+					"400": {
+						"description": "Wrong credentials.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Wrong credentials."
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/auth/register": {
+			"post": {
+				"tags": ["auth"],
+				"summary": "Register",
+				"parameters": [
+					{
+						"in": "body",
+						"name": "body",
+						"description": "Credentials for register",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"email": {
+									"type": "string"
+								},
+								"password": {
+									"type": "string"
+								}
+							}
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Successfully register. Send a email.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string",
+									"default": "Register successfully"
+								},
+								"user": {
+									"type": "object",
+									"properties": {
+										"email": {
+											"type": "string"
+										},
+										"id": {
+											"type": "number"
+										}
+									}
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Wrong credentials.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Email must be a valid email. | Password must contain at least 6 char"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/characters": {
+			"get": {
+				"tags": ["characters"],
+				"summary": "Return all characters",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "access_token",
+						"description": "Need a valid token.",
+						"type": "string",
+						"required": true
+					},
+					{
+						"in": "query",
+						"name": "name",
+						"description": "Get characters by name",
+						"type": "string",
+						"required": false
+					},
+					{
+						"in": "query",
+						"name": "age",
+						"description": "Get characters by age",
+						"type": "number",
+						"required": false
+					},
+					{
+						"in": "query",
+						"name": "movies",
+						"description": "Get characters by movies ID. Must be an array of numbers.",
+						"type": "array",
+						"items": {
+							"type": "number"
+						},
+						"required": false
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Return all characters. Can set a filter by name, age or movies",
+						"schema": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"image": {
+										"type": "string"
+									},
+									"name": {
+										"type": "string"
+									}
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Wrong values of filters.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Age must be numeric. | Movies must be an ID of movie."
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Invalid token.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Invalid token | No token provided."
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["characters"],
+				"summary": "Create new character",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "access_token",
+						"description": "Need a valid token.",
+						"type": "string",
+						"required": true
+					},
+					{
+						"in": "body",
+						"name": "body",
+						"description": "Need values to create a character.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"image": {
+									"type": "string"
+								},
+								"name": {
+									"type": "string"
+								},
+								"age": {
+									"type": "number",
+									"minimum": 18
+								},
+								"weight": {
+									"type": "number"
+								},
+								"history": {
+									"type": "string"
+								},
+								"movies": {
+									"type": "array",
+									"items": {
+										"type": "number",
+										"minimum": 1
+									}
+								}
+							}
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Create a new character, can be passed the movies by an array with IDs.",
+						"schema": {
+							"type": "array",
+							"$ref": "#/definitions/character"
+						}
+					},
+					"422": {
+						"description": "Wrong values of filters.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Name must have between 4-30 chars | Age must be grater or equal than 18. | Weight must be a number | history must be string | image must be a valid url. | movies (optional) must be an array with id of movies."
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Invalid token.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Invalid token | No token provided."
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/characters/{id}": {
+			"get": {
+				"tags": ["characters"],
+				"summary": "Get a character by ID",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "access_token",
+						"description": "Need a valid token.",
+						"type": "string",
+						"required": true
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"description": "ID of character",
+						"type": "number"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Return a characet by ID.",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/character"
+						}
+					},
+					"422": {
+						"description": "Wrong values of filters.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "ID must be a number."
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Invalid token.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Invalid token | No token provided."
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"tags": ["characters"],
+				"summary": "Update a character",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "access_token",
+						"description": "Need a valid token.",
+						"type": "string",
+						"required": true
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"description": "ID of character",
+						"type": "number"
+					},
+					{
+						"in": "body",
+						"name": "body",
+						"description": "Need values to update a character.",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/character"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Update a character.",
+						"schema": {
+							"type": "string",
+							"default": "Character with ID {id} updated."
+						}
+					},
+					"422": {
+						"description": "Wrong ID or values of body.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "ID must be numeric | Name must have between 4-30 chars | Age must be grater or equal than 18. | Weight must be a number | history must be string | image must be a valid url. | movies (optional) must be an array with id of movies."
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Invalid token.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Invalid token | No token provided."
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["characters"],
+				"summary": "Delete a character",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "access_token",
+						"description": "Need a valid token.",
+						"type": "string",
+						"required": true
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"description": "ID of character",
+						"type": "number"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Delete a character.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string",
+									"default": "Character with ID {id} removed"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Wrong ID.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "ID must be numeric."
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Invalid token.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Invalid token | No token provided."
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/movies": {
+			"get": {
+				"tags": ["movies"],
+				"summary": "Return all movies",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "access_token",
+						"description": "Need a valid token.",
+						"type": "string",
+						"required": true
+					},
+					{
+						"in": "query",
+						"name": "title",
+						"description": "Get movies by title",
+						"type": "string",
+						"required": false
+					},
+					{
+						"in": "query",
+						"name": "order",
+						"description": "Get movies ordered by date, must be ASC or DESC.",
+						"type": "string",
+						"required": false,
+						"enum": ["ASC", "DESC"]
+					},
+					{
+						"in": "query",
+						"name": "genre",
+						"description": "Get movies by genres ID.",
+						"type": "array",
+						"items": {
+							"type": "number"
+						},
+						"required": false
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Return all movies. Can set a filter by title, genre or order by date.",
+						"schema": {
+							"type": "array",
+							"items": {
+								"properties": {
+									"title": {
+										"type": "string"
+									},
+									"image": {
+										"type": "string"
+									},
+									"date": {
+										"type": "string",
+										"default": "YYYY-MM-DD"
+									}
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Wrong values of filters.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Order must be ASC or DESC. Genre must be numeric."
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Invalid token.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Invalid token | No token provided."
+								}
+							}
+						}
+					}
+				}
+			},
+			"post": {
+				"tags": ["movies"],
+				"summary": "Create new movie",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "access_token",
+						"description": "Need a valid token.",
+						"type": "string",
+						"required": true
+					},
+					{
+						"in": "body",
+						"name": "body",
+						"description": "Need values to create a character.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"image": {
+									"type": "string"
+								},
+								"title": {
+									"type": "string"
+								},
+								"date": {
+									"type": "number",
+									"default": "YYYY-MM-DD"
+								},
+								"qualify": {
+									"type": "number",
+									"minimum": 1,
+									"maximum": 5
+								},
+								"characters": {
+									"type": "array",
+									"items": {
+										"type": "number",
+										"minimum": 1
+									}
+								},
+								"genres": {
+									"type": "array",
+									"items": {
+										"type": "number",
+										"minimum": 1
+									}
+								}
+							}
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Create a new movie, can be passed the characters and genres by an array with IDs.",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/movies"
+						}
+					},
+					"422": {
+						"description": "Wrong values of filters.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Title must have between 4-30 chars | Qualify must be between 1-5. | Date must be in format YYYY-MM-DD | image must be a valid URL | characters (optional) must be an array with id of characters. | genres (optional) must be an array with id of genres"
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Invalid token.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Invalid token | No token provided."
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"/movies/{id}": {
+			"get": {
+				"tags": ["movies"],
+				"summary": "Get a movie by ID",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "access_token",
+						"description": "Need a valid token.",
+						"type": "string",
+						"required": true
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"description": "ID of character",
+						"type": "number"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Return a characet by ID.",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/movies"
+						}
+					},
+					"422": {
+						"description": "Wrong values of filters.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "ID must be a number."
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Invalid token.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Invalid token | No token provided."
+								}
+							}
+						}
+					}
+				}
+			},
+			"put": {
+				"tags": ["movies"],
+				"summary": "Update a movie",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "access_token",
+						"description": "Need a valid token.",
+						"type": "string",
+						"required": true
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"description": "ID of character",
+						"type": "number"
+					},
+					{
+						"in": "body",
+						"name": "body",
+						"description": "Need values to update a character.",
+						"schema": {
+							"type": "object",
+							"$ref": "#/definitions/movies"
+						}
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Update a movie.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string",
+									"default": "Movie with ID {id} updated"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Wrong ID or values of body.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "ID must be numeric | Title must have between 4-30 chars | Qualify must be between 1-5. | Date must be in format YYYY-MM-DD | image must be a valid url."
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Invalid token.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Invalid token | No token provided."
+								}
+							}
+						}
+					}
+				}
+			},
+			"delete": {
+				"tags": ["movies"],
+				"summary": "Delete a movie",
+				"parameters": [
+					{
+						"in": "header",
+						"name": "access_token",
+						"description": "Need a valid token.",
+						"type": "string",
+						"required": true
+					},
+					{
+						"in": "path",
+						"name": "id",
+						"required": true,
+						"description": "ID of character",
+						"type": "number"
+					}
+				],
+				"responses": {
+					"200": {
+						"description": "Delete a character.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"message": {
+									"type": "string",
+									"default": "Movie with ID {id} removed"
+								}
+							}
+						}
+					},
+					"422": {
+						"description": "Wrong ID.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "ID must be numeric."
+								}
+							}
+						}
+					},
+					"403": {
+						"description": "Invalid token.",
+						"schema": {
+							"type": "object",
+							"properties": {
+								"error": {
+									"type": "string",
+									"default": "Invalid token | No token provided."
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
