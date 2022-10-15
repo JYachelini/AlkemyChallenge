@@ -4,12 +4,12 @@ Para iniciar la API instala las dependencias con npm i y con npm start podes ini
 
 Asegurate de tener las variables de entorno en .env
 
-- DB_NAME="railway"
-- DB_HOST="containers-us-west-97.railway.app"
-- DB_PASS="zvZ4fvXMNv1GlxdyRJax"
-- DB_PORT="6363"
-- DB_USER="root"
+- DB_NAME=
+- DB_HOST=
+- DB_PASS=
+- DB_PORT=
+- DB_USER=
 
-- JWT_SECRET="dHRbAXKbsqzjshbjnI53vXdSEnforzHPFLsgInu4zmpHKlAKPvXhyDDmjzeQQOT"
+- JWT_SECRET=
 
-- SENDER_EMAIL_API_KEY="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"
+- SENDER_EMAIL_API_KEY=
