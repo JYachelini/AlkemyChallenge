@@ -13,3 +13,5 @@ Asegurate de tener las variables de entorno en .env
 - JWT_SECRET=
 
 - SENDER_EMAIL_API_KEY=
+
+Si es necesario para la corrección, puedo pasar las variables de entorno sin problema.
