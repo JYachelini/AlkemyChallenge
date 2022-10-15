@@ -14,4 +14,6 @@ describe('Characters', () => {
 
 		expect(result).toBeInstanceOf(db.Character)
 	})
+
+	test('Create Character', async () => {})
 })

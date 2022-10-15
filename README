@@ -1,0 +1,15 @@
+Esta API esta hecha para el challenge de Alkemy.
+
+Para iniciar la API instala las dependencias con npm i y con npm start podes iniciar la API para su uso.
+
+Asegurate de tener las variables de entorno en .env
+
+- DB_NAME="railway"
+- DB_HOST="containers-us-west-97.railway.app"
+- DB_PASS="zvZ4fvXMNv1GlxdyRJax"
+- DB_PORT="6363"
+- DB_USER="root"
+
+- JWT_SECRET="dHRbAXKbsqzjshbjnI53vXdSEnforzHPFLsgInu4zmpHKlAKPvXhyDDmjzeQQOT"
+
+- SENDER_EMAIL_API_KEY="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"
